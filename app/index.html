@@ -3,20 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
+<title>Vice Coast Cover Studio — GTA-style cover art maker</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">VC</span><span class="brand-name">VICE COAST</span><span class="brand-sub">Cover Studio</span></div>
+  <p class="tagline">Your photo + a caption &rarr; a GTA-style poster. Offline, no upload, export PNG.</p>
+</header>
 <main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
+  <section class="controls" aria-label="Cover controls">
+    <div class="group">
+      <h2>1 &middot; Photos</h2>
+      <p class="hint">Load up to 3 photos from your machine. Samples are free to use.</p>
+      <div class="photo-slots">
+        <label class="slot">Photo A <input id="photoA" type="file" accept="image/*"></label>
+        <label class="slot">Photo B <input id="photoB" type="file" accept="image/*"></label>
+        <label class="slot">Photo C <input id="photoC" type="file" accept="image/*"></label>
+      </div>
+      <div class="row">
+        <button id="sampleBoulevard" type="button">Sample: Boulevard</button>
+        <button id="samplePier" type="button">Sample: Pier</button>
+      </div>
+    </div>
+    <div class="group">
+      <h2>2 &middot; Layout</h2>
+      <div class="row wrap" id="layoutRow" role="group" aria-label="Layout">
+        <button type="button" data-layout="hero3" class="pick is-on">Hero + 3</button>
+        <button type="button" data-layout="grid4" class="pick">Grid 4</button>
+        <button type="button" data-layout="fullbleed" class="pick">Full bleed</button>
+        <button type="button" data-layout="tilt" class="pick">Tilted snaps</button>
+        <button type="button" data-layout="triptych" class="pick">Triptych</button>
+        <button type="button" data-layout="strip" class="pick">Comic strip</button>
+      </div>
+    </div>
+    <div class="group">
+      <h2>3 &middot; Colour grade</h2>
+      <div class="row wrap" id="gradeRow" role="group" aria-label="Colour grade">
+        <button type="button" data-grade="sunset" class="pick is-on"><span class="sw sunset"></span>Vice Sunset</button>
+        <button type="button" data-grade="neon" class="pick"><span class="sw neon"></span>Neon Nights</button>
+        <button type="button" data-grade="gold" class="pick"><span class="sw gold"></span>Palm Gold</button>
+        <button type="button" data-grade="teal" class="pick"><span class="sw teal"></span>Miami Teal</button>
+        <button type="button" data-grade="bubble" class="pick"><span class="sw bubble"></span>Bubblegum</button>
+      </div>
+      <p class="hint">Five-step posterize + gradient map, ink outlines, halftone dots, paper grain.</p>
+    </div>
+    <div class="group">
+      <h2>4 &middot; Caption</h2>
+      <label class="field">Title <input id="title" type="text" maxlength="24" value="VICE COAST"></label>
+      <label class="field">Subtitle <input id="subtitle" type="text" maxlength="40" value="a Leonida story"></label>
+    </div>
+    <div class="group">
+      <h2>5 &middot; Panel crop</h2>
+      <div class="row" id="panelRow" role="group" aria-label="Panel">
+        <button type="button" data-panel="0" class="pick is-on">Panel 1</button>
+        <button type="button" data-panel="1" class="pick">Panel 2</button>
+        <button type="button" data-panel="2" class="pick">Panel 3</button>
+        <button type="button" data-panel="3" class="pick">Panel 4</button>
+      </div>
+      <div class="row wrap" id="panelPhotoRow" role="group" aria-label="Photo for this panel">
+        <button type="button" data-pphoto="0" class="pick is-on">Photo A</button>
+        <button type="button" data-pphoto="1" class="pick">Photo B</button>
+        <button type="button" data-pphoto="2" class="pick">Photo C</button>
+      </div>
+      <label class="field">Zoom <input id="zoom" type="range" min="1" max="2.5" step="0.01" value="1.15"></label>
+      <label class="field">Shift X <input id="shiftX" type="range" min="-0.35" max="0.35" step="0.01" value="0"></label>
+      <label class="field">Shift Y <input id="shiftY" type="range" min="-0.35" max="0.35" step="0.01" value="0"></label>
+    </div>
+    <div class="group">
+      <h2>6 &middot; Export</h2>
+      <div class="row wrap" id="sizeRow" role="group" aria-label="Export size">
+        <button type="button" data-size="1080x1080" class="pick is-on">1080 &times; 1080</button>
+        <button type="button" data-size="1080x1350" class="pick">1080 &times; 1350</button>
+        <button type="button" data-size="1920x1080" class="pick">1920 &times; 1080</button>
+      </div>
+      <div class="row">
+        <button id="export" type="button" class="big">Export PNG</button>
+        <button id="randomize" type="button">Shuffle look</button>
+      </div>
+      <div class="row">
+        <button id="undo" type="button">Undo</button>
+        <button id="redo" type="button">Redo</button>
+      </div>
+      <p id="status" role="status">Ready. Pick a photo to begin.</p>
+    </div>
   </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
+  <section class="stage" aria-label="Live preview">
+    <canvas id="cover" width="960" height="960" aria-label="Live cover preview"></canvas>
+    <p class="stage-note">Live preview &mdash; what you see is what the PNG gets.</p>
+  </section>
 </main>
 <script type="module" src="./src/main.js"></script>
 </body>
